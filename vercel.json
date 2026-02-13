@@ -1,22 +1,18 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "api/**/*.js",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "**/*",
-            "use": "@vercel/static"
+    "functions": {
+        "api/**/*.js": {
+            "memory": 1024,
+            "maxDuration": 10
         }
-    ],
+    },
     "routes": [
         {
-            "src": "/api/(.*)",
-            "dest": "/api/$1"
+            "src": "/api/send-email",
+            "dest": "/api/send-email.js"
         },
         {
-            "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot|ico))",
+            "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot|ico|json))",
             "dest": "/$1"
         },
         {
