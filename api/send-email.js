@@ -1,29 +1,33 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
-    // Enable CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    );
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Handle preflight request
+    // Handle OPTIONS request
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
 
-    // Only allow POST requests
+    // Check if POST
     if (req.method !== 'POST') {
-        return res.status(405).json({ success: false, message: 'Method not allowed. Use POST.' });
+        console.log('Method received:', req.method);
+        return res.status(405).json({
+            success: false,
+            message: `Method ${req.method} not allowed. Use POST.`
+        });
     }
 
     try {
+        console.log('Processing POST request...');
+        console.log('Request body:', req.body);
+
         const { name, email, subject, message } = req.body;
 
-        // Validate input
+        // Validate
         if (!name || !email || !subject || !message) {
             return res.status(400).json({
                 success: false,
@@ -31,7 +35,9 @@ export default async function handler(req, res) {
             });
         }
 
-        // Nodemailer configuration with environment variables
+        console.log('Creating transporter...');
+
+        // Create transporter
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -40,8 +46,10 @@ export default async function handler(req, res) {
             }
         });
 
-        // Email options
-        const mailOptions = {
+        console.log('Sending email...');
+
+        // Send email
+        const info = await transporter.sendMail({
             from: `"${name}" <${process.env.EMAIL_USER}>`,
             to: process.env.EMAIL_USER,
             replyTo: email,
@@ -51,39 +59,35 @@ export default async function handler(req, res) {
                     <h2 style="color: #00ffff; border-bottom: 2px solid #00ffff; padding-bottom: 10px;">
                         New Contact Form Submission
                     </h2>
-                    
                     <div style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 5px;">
-                        <p><strong style="color: #333;">Name:</strong> ${name}</p>
-                        <p><strong style="color: #333;">Email:</strong> ${email}</p>
-                        <p><strong style="color: #333;">Subject:</strong> ${subject}</p>
+                        <p><strong>Name:</strong> ${name}</p>
+                        <p><strong>Email:</strong> ${email}</p>
+                        <p><strong>Subject:</strong> ${subject}</p>
                     </div>
-                    
                     <div style="margin: 20px 0; padding: 15px; background: #fff; border-left: 4px solid #00ffff;">
-                        <h3 style="margin-top: 0; color: #333;">Message:</h3>
-                        <p style="color: #666; line-height: 1.6;">${message.replace(/\n/g, '<br>')}</p>
+                        <h3>Message:</h3>
+                        <p style="line-height: 1.6;">${message.replace(/\n/g, '<br>')}</p>
                     </div>
-                    
                     <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                    
                     <p style="color: #999; font-size: 12px;">
                         This email was sent from your portfolio contact form.
                     </p>
                 </div>
             `
-        };
+        });
 
-        // Send email
-        await transporter.sendMail(mailOptions);
+        console.log('Email sent:', info.messageId);
 
         return res.status(200).json({
             success: true,
             message: 'Email sent successfully!'
         });
+
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('Error:', error);
         return res.status(500).json({
             success: false,
-            message: 'Failed to send email. Please try again later.',
+            message: 'Failed to send email',
             error: error.message
         });
     }
