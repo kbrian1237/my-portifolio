@@ -1,23 +1,8 @@
 {
-    "version": 2,
-    "functions": {
-        "api/**/*.js": {
-            "memory": 1024,
-            "maxDuration": 10
-        }
-    },
-    "routes": [
+    "rewrites": [
         {
-            "src": "/api/send-email",
-            "dest": "/api/send-email.js"
-        },
-        {
-            "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot|ico|json))",
-            "dest": "/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/index.html"
+            "source": "/api/(.*)",
+            "destination": "/api/$1"
         }
     ]
 }
