@@ -437,8 +437,14 @@ window.addEventListener('load', () => {
     document.body.style.opacity = '0';
     document.body.style.transition = 'opacity 0.5s ease';
 
+
     setTimeout(() => {
         document.body.style.opacity = '1';
         createNeuralNetwork();
     }, 100);
+});
+
+// Update current year
+document.querySelectorAll('.current-year').forEach(el => {
+    el.textContent = new Date().getFullYear();
 });
