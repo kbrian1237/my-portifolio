@@ -679,6 +679,26 @@ section {
     text-shadow: 0 0 5px var(--accent-color);
 }
 
+/* Mobile App Cards - Portrait/Vertical Layout */
+.project-card.mobile-app-card {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.project-card.mobile-app-card .project-image {
+    height: 450px; /* Taller to accommodate mobile screenshots */
+}
+
+/* Make mobile apps appear in their own row */
+.mobile-apps-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 400px));
+    gap: 2rem;
+    justify-content: center;
+}
+
+
 /* Contact Section */
 .contact-content {
     display: grid;
