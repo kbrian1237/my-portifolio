@@ -177,8 +177,8 @@ document.querySelector('.contact-form').addEventListener('submit', async functio
     submitBtn.disabled = true;
 
     try {
-        // Send data to backend
-        const response = await fetch('/send-email', {
+        // Send data to backend API
+        const response = await fetch('/api/send-email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
